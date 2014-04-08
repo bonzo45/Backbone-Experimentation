@@ -1,49 +1,113 @@
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>Todo</title>
+	<meta http-equiv='content-type' content='text/html; charset=utf-8' />
+  <link href='styles.css' rel='stylesheet' type='text/css'>
+  <title>Todo</title>
 </head>
 <body>
+  <h1>Things To Do</h1>
+	<script type='text/template' id='todo-template'>
+		<div class='todo_div'>
+		  <h2><%= title %></h2>
+		  <%= description %>
+		</div>
+	</script>
 
-	<div id="todos_div">
+	<div id='todos_div'>
 
 	</div>
 
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
-	<script src="http://documentcloud.github.com/backbone/backbone-min.js"></script>
-	<script>
-	  var Todo = Backbone.Model.extend({
-	  	defaults: {
-	  		title: "Untitled",
-	  		description: "",
-	  		done: false
-	  	}
-	  })
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+	<script src='http://documentcloud.github.com/underscore/underscore-min.js'></script>
+	<script src='http://documentcloud.github.com/backbone/backbone-min.js'></script>
+	
+  <script>
+  	/* ------------------------------------------*/
+    /* ----------- Models/Collections -----------*/
+    /* ------------------------------------------*/
+    var Todo = Backbone.Model.extend({
+    	defaults: {
+    		title: 'Untitled',
+    		description: '',
+    		done: false
+    	}
+    })
 
-	  var todo1 = new Todo({
-	  	title: "My first Todo",
-	  	description: "Some kind of useful information about the task..."
-	  })  
+    var Todos = Backbone.Collection.extend({
+      model: Todo
+    })
 
-	  var todo2 = new Todo({
-	  	title: "My second Todo",
-	  	description: "A similarly descriptive piece of text with a useful reminder..."
-	  })
+    var todo1 = new Todo({
+    	title: 'Some Task...',
+    	description: 'Some kind of useful information about the task...'
+    })  
 
-	  var todo3 = new Todo({
-	  	title: "My third and final Todo",
-	  	description: "This one is particularly important for some reason known only to me..."
-	  })
+    var todo2 = new Todo({
+    	title: 'Reminder',
+    	description: 'A similarly descriptive piece of text with a useful reminder...'
+    })
 
-	  var Todos = Backbone.Collection.extend({
-	  	model: Todo
-	  })
+    var todo3 = new Todo({
+    	title: 'Lastly...',
+    	description: 'This one is particularly important for some reason known only to me...'
+    })
 
-	  var todoList = new Todos([todo1, todo2, todo3])
+    var myTodoList = new Todos([todo1, todo2, todo3])
+    
+    /* ------------------------------------------*/
+    /* ----------------- Views ------------------*/
+    /* ------------------------------------------*/
+    // View for a single todo
+    var TodoView = Backbone.View.extend({
+      // Single todo is placed in a div
+      tagName: 'div',
 
-	  $("#todos_div").html(JSON.stringify(todoList))
-	</script>
+      // Make it class todo
+      className: 'todo',
+
+      // The template for a todo is in the todo-template script
+      todoTpl: _.template($('#todo-template').html()),
+
+      // Pass through the todo object
+      initialize: function(todo) {
+        this.model = todo
+      },
+
+      // Rendering simply applies the template
+      render: function() {
+        this.$el.html(this.todoTpl(this.model.toJSON()))
+        return this
+      }
+    })
+
+    // View for a list of todos
+    var TodoListView = Backbone.View.extend({
+      // List should be in a div
+      tagName: 'div',
+      
+      // Take through all the things to do
+      initialize: function(thingsToDo) {
+        this.thingsToDo = thingsToDo
+      },
+
+      // Render the todo list into HTML
+      render: function() {
+        // For each of the items in the todo list
+        this.thingsToDo.forEach(function(thingToDo) {
+          // Create a view for it
+          var todoView = new TodoView(thingToDo)
+          // Render it and stick it on the end
+          this.$el.append(todoView.render().el)
+        }, this)
+
+        return this
+      }
+    })
+    
+    var myTodoListView = new TodoListView(myTodoList);
+
+    $('#todos_div').html(myTodoListView.render().el)
+  </script>
 
 </body>
 </html>
