@@ -5,17 +5,18 @@
   <title>Todo</title>
 </head>
 <body>
-  <h1>Things To Do</h1>
-	<script type='text/template' id='todo-template'>
-		<div class='todo_div'>
-		  <h2><%= title %></h2>
-		  <%= description %>
-		</div>
+  <div id="header">
+    <h1>Things To Do</h1>
+  </div>
+
+  <div id="main">
+  </div>
+
+  <script type='text/template' id='todo-template'>
+	  <h2><%= title %></h2>
+	  <%= description %>
+    <div class="progress"><%= done ? 'Complete' : 'In Progress' %></div>
 	</script>
-
-	<div id='todos_div'>
-
-	</div>
 
 	<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
 	<script src='http://documentcloud.github.com/underscore/underscore-min.js'></script>
@@ -30,7 +31,19 @@
     		title: 'Untitled',
     		description: '',
     		done: false
-    	}
+    	},
+
+      initialize: function() {
+        this.on('change:done', function() {
+          
+        })
+      },
+
+      toggleDone: function() {
+        this.set({
+          'done': ! this.get('done')
+        })
+      }
     })
 
     var Todos = Backbone.Collection.extend({
@@ -38,16 +51,19 @@
     })
 
     var todo1 = new Todo({
+      id: '1',
     	title: 'Some Task...',
     	description: 'Some kind of useful information about the task...'
     })  
 
     var todo2 = new Todo({
+      id: '2',
     	title: 'Reminder',
     	description: 'A similarly descriptive piece of text with a useful reminder...'
     })
 
     var todo3 = new Todo({
+      id: '3',
     	title: 'Lastly...',
     	description: 'This one is particularly important for some reason known only to me...'
     })
@@ -73,6 +89,24 @@
         this.model = todo
       },
 
+      events: {
+        'click': 'toggleDone'
+      },
+
+      toggleDone: function() {
+        var model = this.model
+        model.toggleDone()
+        redraw()
+        if (model.get('done')) {
+          $("#" + model.id).addClass("done")
+          $("#" + model.id).removeClass("incomplete")
+        }
+        else {
+          $("#" + model.id).addClass("incomplete")
+          $("#" + model.id).removeClass("done")
+        }
+      },
+
       // Rendering simply applies the template
       render: function() {
         this.$el.html(this.todoTpl(this.model.toJSON()))
@@ -84,20 +118,27 @@
     var TodoListView = Backbone.View.extend({
       // List should be in a div
       tagName: 'div',
+
+      // Make it class todolist
+      className: 'todoList',
+
+      thingsToDoViews: [],
       
       // Take through all the things to do
       initialize: function(thingsToDo) {
         this.thingsToDo = thingsToDo
+        this.thingsToDoViews = []
+        this.thingsToDo.forEach(function(thingToDo) {
+          this.thingsToDoViews.push(new TodoView(thingToDo))
+        }, this)
       },
 
       // Render the todo list into HTML
       render: function() {
         // For each of the items in the todo list
-        this.thingsToDo.forEach(function(thingToDo) {
-          // Create a view for it
-          var todoView = new TodoView(thingToDo)
+        this.thingsToDoViews.forEach(function(thingToDoView) {
           // Render it and stick it on the end
-          this.$el.append(todoView.render().el)
+          this.$el.append(thingToDoView.render().el)
         }, this)
 
         return this
@@ -106,7 +147,11 @@
     
     var myTodoListView = new TodoListView(myTodoList);
 
-    $('#todos_div').html(myTodoListView.render().el)
+    var redraw = function() {
+      $('#main').html(myTodoListView.render().el)
+    }
+
+    redraw()
   </script>
 
 </body>

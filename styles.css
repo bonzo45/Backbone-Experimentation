@@ -1,3 +1,7 @@
+html {
+	background-color: #F9F9F9;	
+}
+
 body {
 	width: 760px;
 	margin: 0 auto;
@@ -23,4 +27,19 @@ h2 {
 	margin: 10px 10px 10px 10px;
 	padding: 5px 15px 5px 15px;
 	border-radius: 5px;
+	position: relative;
+}
+
+.progress {
+	position: absolute;
+	right: 0px;
+	bottom: 0px;
+}
+
+.done {
+	background-color: blue;
+}
+
+.incomplete {
+	background-color: red;
 }
