@@ -34,9 +34,7 @@
     	},
 
       initialize: function() {
-        this.on('change:done', function() {
-          
-        })
+        
       },
 
       toggleDone: function() {
@@ -94,16 +92,15 @@
       },
 
       toggleDone: function() {
-        var model = this.model
-        model.toggleDone()
+        this.model.toggleDone()
         redraw()
-        if (model.get('done')) {
-          $("#" + model.id).addClass("done")
-          $("#" + model.id).removeClass("incomplete")
+        if (this.model.get('done')) {
+          $("#" + this.model.id).addClass("done")
+          $("#" + this.model.id).removeClass("incomplete")
         }
         else {
-          $("#" + model.id).addClass("incomplete")
-          $("#" + model.id).removeClass("done")
+          $("#" + this.model.id).addClass("incomplete")
+          $("#" + this.model.id).removeClass("done")
         }
       },
 
@@ -148,7 +145,7 @@
     var myTodoListView = new TodoListView(myTodoList);
 
     var redraw = function() {
-      $('#main').html(myTodoListView.render().el)
+      $('#main').append(myTodoListView.render().el)
     }
 
     redraw()
