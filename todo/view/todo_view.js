@@ -1,12 +1,10 @@
 var TodoView = Backbone.View.extend({
-  // Single todo is placed in a div
+  // HTML/CSS
   tagName: 'div',
-
-  // Make it class todo
   className: 'todo incomplete',
 
-  // The template for a todo is in the todo-template script
-  todoTpl: _.template($('#todo-template').html()),
+  // Template
+  template: $('#todo-template').html(),
 
   // Pass through the todo object
   initialize: function(todo) {
@@ -20,6 +18,19 @@ var TodoView = Backbone.View.extend({
   toggleDone: function() {
     this.model.toggleDone()
     this.render()
+    this.setCSS()
+  },
+
+  // Rendering simply applies the template
+  render: function() {
+    var compiledTemplate = _.template(this.template)
+    var data = this.model.toJSON()
+    var html = compiledTemplate(data)
+    this.$el.html(html)
+    return this.el
+  },
+
+  setCSS: function() {
     if (this.model.get('done')) {
       $("#" + this.model.id).addClass("done")
       $("#" + this.model.id).removeClass("incomplete")
@@ -28,11 +39,5 @@ var TodoView = Backbone.View.extend({
       $("#" + this.model.id).addClass("incomplete")
       $("#" + this.model.id).removeClass("done")
     }
-  },
-
-  // Rendering simply applies the template
-  render: function() {
-    this.$el.html(this.todoTpl(this.model.toJSON()))
-    return this
   }
 })

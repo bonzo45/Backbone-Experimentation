@@ -1,10 +1,10 @@
 var TodoListView = Backbone.View.extend({
-  // List should be in a div
+  // HTML/CSS
   tagName: 'div',
-
-  // Make it class todolist
   className: 'todoList',
 
+  // Model
+  thingsToDo: [],
   thingsToDoViews: [],
   
   // Take through all the things to do
@@ -27,14 +27,18 @@ var TodoListView = Backbone.View.extend({
 
   // Render the todo list into HTML
   render: function() {
-    this.$el.empty()
     this.$el.html("<div class=\"delete\"></div>")
     // For each of the items in the todo list
     this.thingsToDoViews.forEach(function(thingToDoView) {
-      // Render it and stick it on the end
-      this.$el.append(thingToDoView.render().el)
+      // Create a div for it, with the appropriate id
+      id = thingToDoView.model.id
+      newDiv = $("<div id=" + id + " class=todo></div>")
+      // Stick it in that div
+      thingToDoView.setElement(newDiv).render()
+      this.$el.append(newDiv)
+      thingToDoView.setCSS()
     }, this)
 
-    return this
+    return this.el
   }
 })

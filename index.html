@@ -44,7 +44,9 @@
     var myTodoList = new Todos([todo1, todo2, todo3])    
     var myTodoListView = new TodoListView(myTodoList);
 
-    $('#main').append(myTodoListView.render().el)
+
+    myTodoListView.setElement("#main")
+    myTodoListView.render()
   </script>
 
 </body>
