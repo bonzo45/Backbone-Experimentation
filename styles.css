@@ -37,9 +37,9 @@ h2 {
 }
 
 .done {
-	background-color: blue;
+	opacity: 0.3;
 }
 
 .incomplete {
-	background-color: red;
+	opacity: 1.0;
 }
